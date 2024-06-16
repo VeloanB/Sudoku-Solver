@@ -1,18 +1,36 @@
-board = [
-    [5, 3, 4, 6, 7, 8, 9, 1, 2],
-    [6, 7, 2, 1, 9, 5, 3, 4, 8],
-    [1, 9, 8, 3, 4, 2, 5, 6, 7],
-    [8, 5, 9, 7, 6, 1, 4, 2, 0],
-    [4, 2, 6, 8, 5, 3, 7, 9, 1],
-    [7, 1, 3, 9, 2, 4, 8, 5, 6],
-    [9, 6, 1, 5, 3, 7, 2, 8, 4],
-    [2, 8, 7, 4, 1, 9, 6, 3, 5],
-    [3, 4, 5, 2, 8, 0, 0, 0, 0],
+boardString = [
+    "007650001",
+    "201900004",
+    "500001890",
+
+
+    "000030789",
+    "009240000",
+    "315009000",
+    "040008600",
+    "970003100",
+    "000410908"
 ]
-#6719
+
+board = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+]
 
 
 ideal = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1}
+
+def string_to_Board(s):
+    for i in range(9):
+        for j in range(9):
+            board[i][j] = int(s[i][j])
 
 def printBoard(board):
     for row in range(9):
@@ -79,11 +97,9 @@ def isValid(value, row, col, board):
     for rowcol in range(9):
         
         if board[row][rowcol] == value and rowcol != col:
-            print("row problem")
             return False
 
         if board[rowcol][col] == value and rowcol != row:
-            print("col problem")
             return False
     
     rowStart = (row // 3) * 3
@@ -93,14 +109,38 @@ def isValid(value, row, col, board):
         for c in range(3):
             if board[rowStart + r][colStart + c] == value:
                 if rowStart + r != row and colStart + c != col:
-                    print("box problem")
                     return False
 
     return True
 
+def find_empty(board):
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] == 0:
+                return row, col
+    return False
+
+
+def solve(board):
+    first_empty = find_empty(board)
+    if first_empty == False:
+        return True
+    row, col = first_empty
+    for n in range(1, 10):
+        if isValid(n, row, col, board):
+            board[row][col] = n
+            if solve(board):
+                return True
+            board[row][col] = 0
+    return False
+                        
+
 def main():
-    print(isSolved(board))
-    print(isValid(6, 8, 8, board))
+    string_to_Board(boardString)
+    print("solving")
+    solve(board)
+    printBoard(board)
+    print(board)
 
 if __name__ == '__main__':
     main()
