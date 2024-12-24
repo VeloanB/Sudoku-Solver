@@ -1,15 +1,13 @@
 boardString = [
-    "007650001",
-    "201900004",
-    "500001890",
-
-
-    "000030789",
-    "009240000",
-    "315009000",
-    "040008600",
-    "970003100",
-    "000410908"
+    "790000260",
+    "014700000",
+    "000000000",
+    "508400000",
+    "000050038",
+    "100089000",
+    "040002093",
+    "000090070",
+    "000037005"
 ]
 
 board = [
@@ -83,7 +81,7 @@ def isSolved(board):
                     tempBox[board[rowStart + row][colStart + col]] = 1
         if tempBox != ideal:
             return False
-            
+
     return True
 
 def isFull(board):
@@ -120,17 +118,57 @@ def find_empty(board):
                 return row, col
     return False
 
+def solvable(board):
+    # Check rows
+    for row in range(9):
+        tempRow = set()
+        for col in range(9):
+            if board[row][col] in tempRow:
+                return False
+            elif board[row][col] != 0:
+                tempRow.add(board[row][col])
+
+    # Check columns
+    for col in range(9):
+        tempCol = set()
+        for row in range(9):
+            if board[row][col] in tempCol:
+                return False
+            elif board[row][col] != 0:
+                tempCol.add(board[row][col])
+
+    # Check 3x3 boxes
+    for box in range(9):
+        tempBox = set()
+        rowStart = (box // 3) * 3
+        colStart = (box % 3) * 3
+        for row in range(3):
+            for col in range(3):
+                value = board[rowStart + row][colStart + col]
+                if value in tempBox:
+                    return False
+                elif value != 0:
+                    tempBox.add(value)
+
+    return True
+
+
+
 
 def solve(board):
+    if not solvable(board):
+        return False
     first_empty = find_empty(board)
     if first_empty == False:
-        return True
+        yield board  # Return the solved board as the last step
+        return
     row, col = first_empty
     for n in range(1, 10):
         if isValid(n, row, col, board):
             board[row][col] = n
+            yield board  # Yield the current board state after placing a number
             if solve(board):
-                return True
+                return
             board[row][col] = 0
     return False
                         
